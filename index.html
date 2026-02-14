@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mayank Foods</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#fff8f0;
+}
+header{
+    background:orange;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+.menu{
+    padding:20px;
+    margin-bottom:220px;
+}
+.item{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:10px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.1);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+button{
+    background:orange;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+.cart{
+    background:white;
+    padding:15px;
+    position:fixed;
+    bottom:0;
+    width:100%;
+    box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+.cart-item{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:5px;
+}
+.remove{
+    background:red;
+    font-size:12px;
+    padding:4px 8px;
+}
+.whatsapp{
+    background:green;
+    width:100%;
+    margin-top:5px;
+}
+.upi{
+    background:purple;
+    width:100%;
+    margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🍔 Mayank Foods</header>
+
+<div class="menu">
+
+<div class="item">
+<span>Burger - ₹60</span>
+<button onclick="addItem('Burger',60)">Add</button>
+</div>
+
+<div class="item">
+<span>Momo - ₹50</span>
+<button onclick="addItem('Momo',50)">Add</button>
+</div>
+
+<div class="item">
+<span>Chowmin - ₹70</span>
+<button onclick="addItem('Chowmin',70)">Add</button>
+</div>
+
+<div class="item">
+<span>Egg Roll - ₹40</span>
+<button onclick="addItem('Egg Roll',40)">Add</button>
+</div>
+
+</div>
+
+<div class="cart">
+<div id="cartItems"></div>
+<strong id="total">Total: ₹0</strong>
+<button class="whatsapp" onclick="whatsappOrder()">Order on WhatsApp</button>
+<button class="upi" onclick="payUPI()">Pay via UPI</button>
+</div>
+
+<script>
+
+let cart = [];
+
+function addItem(name,price){
+    let item = cart.find(i => i.name === name);
+    if(item){
+        item.qty++;
+    }else{
+        cart.push({name,price,qty:1});
+    }
+    updateCart();
+}
+
+function removeItem(name){
+    cart = cart.filter(i => i.name !== name);
+    updateCart();
+}
+
+function updateCart(){
+    let cartDiv = document.getElementById("cartItems");
+    cartDiv.innerHTML = "";
+    let total = 0;
+
+    cart.forEach(item=>{
+        total += item.price * item.qty;
+        cartDiv.innerHTML += `
+        <div class="cart-item">
+            ${item.name} x${item.qty}
+            <button class="remove" onclick="removeItem('${item.name}')">X</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = "Total: ₹" + total;
+}
+
+function whatsappOrder(){
+    if(cart.length === 0){
+        alert("Cart empty!");
+        return;
+    }
+
+    let message = "Mayank Foods Order:%0A";
+    let total = 0;
+
+    cart.forEach(item=>{
+        message += `${item.name} x${item.qty} = ₹${item.price * item.qty}%0A`;
+        total += item.price * item.qty;
+    });
+
+    message += `Total = ₹${total}`;
+
+    window.open(`https://wa.me/918651043738?text=${message}`);
+}
+
+function payUPI(){
+    let total = 0;
+
+    cart.forEach(item=>{
+        total += item.price * item.qty;
+    });
+
+    if(total === 0){
+        alert("Cart empty!");
+        return;
+    }
+
+    window.location.href = 
+    `upi://pay?pa=8651043738@ybl&pn=Mayank%20Foods&am=${total}&cu=INR`;
+}
+
+</script>
+
+</body>
+</html>
